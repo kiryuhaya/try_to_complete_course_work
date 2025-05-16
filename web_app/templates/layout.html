@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Text Checker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Проверка машинной генерации текста</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Главная</a></li>
+                {% if session.get('user_id') %}
+                    <li><a href="{{ url_for('dashboard') }}">Личный кабинет</a></li>
+                    <li><a href="{{ url_for('logout') }}">Выход</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Вход</a></li>
+                    <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="javascript:void(0)" onclick="openModal('about')">О нас</a>
+            <a href="javascript:void(0)" onclick="openModal('faq')">FAQ</a>
+            <a href="javascript:void(0)" onclick="openModal('contacts')">Контакты</a>
+        </div>
+        <div class="copyright">
+            <p>© 2025 DetectorofAI <br> Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('about')">&times;</span>
+            <h3>О нас</h3>
+            <p>Мы — студенты НИУ ВШЭ НН и разрабатываем систему для выявления машинной генерации текста в рамках курсовой работы.</p>
+            <p>Наш сервис сочетает академические знания с практическими навыками. Мы стремимся предложить удобный инструмент для анализа текстов, который помогает отличать авторский контент от сгенерированного нейросетями.</p>
+            <p>Проект активно развивается, и мы постоянно улучшаем алгоритмы и функционал. Ваши отзывы и предложения — важная часть нашего роста!</p>
+            <p>P.S. Этот проект — наш шаг в мир передовых AI-технологий.</p>
+        </div>
+    </div>
+
+    <div id="contactsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('contacts')">&times;</span>
+            <h3>Контакты</h3>
+            <ul class="contacts-list">
+                <li><strong>Email:</strong>
+                    <ul>
+                        <li><a href="mailto:kaenaliev@edu.hse.ru">kaenaliev@edu.hse.ru</a></li>
+                        <li><a href="mailto:khnychkov@edu.hse.ru">khnychkov@edu.hse.ru</a></li>
+                    </ul>
+                </li>
+                <li><strong>Telegram:</strong>
+                    <ul>
+                        <li><a href="tg://resolve?domain=shkirich">@shkirich</a></li>
+                        <li><a href="tg://resolve?domain=Joniquee">@Joniquee</a></li>
+                    </ul>
+                </li>
+                <li><strong>Время работы:</strong> 24/7</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('faq')">&times;</span>
+            <h3>Часто задаваемые вопросы</h3>
+            <div class="faq-item">
+                <div class="faq-question">Как проверить текст? <span class="toggle-icon">▼</span></div>
+                <div class="faq-answer">
+                    <ol>
+                        <li>Вставьте текст в поле на главной странице.</li>
+                        <li>Нажмите кнопку <strong>«Проверить текст»</strong>.</li>
+                        <li>Дождитесь обработки (обычно от 5 до 15 секунд).</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Какие тексты можно проверять? <span class="toggle-icon">▼</span></div>
+                <div class="faq-answer">
+                    <ul>
+                        <p><strong>✓</strong> Тексты на русском и английском языках.</p>
+                        <p><strong>✗</strong> Зашифрованные или бинарные данные.</p>
+                    </ul>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Как интерпретировать результаты? <span class="toggle-icon">▼</span></div>
+                <div class="faq-answer">
+                    <p>Подсветка текста на нашем сервисе работает по принципу "интенсивности вероятности". Чем выше вероятность того, что текст сгенерирован искусственным интеллектом, тем ярче будет подсвечено слово.</p>
+                    <ol>
+                        <li><strong>Яркая подсветка (красная):</strong> высокая вероятность (больше 80%) того, что слово или фраза были сгенерированы машиной.</li>
+                        <li><strong>Средняя подсветка (желтая):</strong> умеренная вероятность (от 40% до 80%) того, что слово или фраза были сгенерированы машиной.</li>
+                        <li><strong>Тусклая подсветка:</strong> низкая вероятность (менее 40%) того, что слово или фраза были сгенерированы машиной.</li>
+                    </ol>
+                    <p>Это позволяет вам легко определить, какие части текста наиболее вероятно сгенерированы AI.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Технические требования <span class="toggle-icon">▼</span></div>
+                <div class="faq-answer">
+                    <ol>
+                        <p>Современный браузер.</p>
+                        <p>Подключение к интернету.</p>
+                        <p>Отключенный блокировщик скриптов.</p>
+                    </ol>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Конфиденциальность данных <span class="toggle-icon">▼</span></div>
+                <div class="faq-answer">
+                    <ol>
+                        <p>Все проверки анонимны.</p>
+                        <p>SSL-шифрование соединения.</p>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Модальные окна
+        function openModal(type) {
+            document.getElementById(`${type}Modal`).style.display = 'block';
+        }
+    
+        function closeModal(type) {
+            document.getElementById(`${type}Modal`).style.display = 'none';
+        }
+    
+        // Аккордеон
+        document.querySelectorAll('.faq-item h4').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isActive = answer.style.display === 'block';
+                
+                document.querySelectorAll('.faq-answer').forEach(a => {
+                    a.style.display = 'none';
+                    a.previousElementSibling.querySelector('.toggle-icon').textContent = '▼';
+                });
+    
+                if (!isActive) {
+                    answer.style.display = 'block';
+                    question.querySelector('.toggle-icon').textContent = '▲';
+                }
+            });
+        });
+
+        // В обработчике клика для вопросов
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isOpen = answer.classList.contains('show');
+                
+                // Закрываем все ответы
+                document.querySelectorAll('.faq-answer').forEach(ans => {
+                    ans.classList.remove('show');
+                    ans.previousElementSibling.querySelector('.toggle-icon').textContent = '▼';
+                });
+                
+                // Открываем текущий, если был закрыт
+                if (!isOpen) {
+                    answer.classList.add('show');
+                    question.querySelector('.toggle-icon').textContent = '▲';
+                }
+            });
+        });
+    
+        // Закрытие модальных окон
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

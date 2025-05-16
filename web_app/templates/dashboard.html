@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<h2>Добро пожаловать, {{ user.username }}!</h2>
+
+<h3>История проверок</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Текст</th>
+            <th>Результат</th>
+            <th>Дата и время</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in history %}
+        <tr>
+            <td>
+                {{ item.input_text[:20] }}{% if item.input_text|length > 20 %}...{% endif %}
+            </td>
+            <td>{{ item.result }}</td>
+            <td>{{ item.timestamp.astimezone().strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>
+                <button onclick="showModal(this)" data-fulltext="{{ item.input_text | replace('\"', '&quot;') }}">Открыть</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <pre id="modal-text" style="white-space: pre-wrap;"></pre>
+    </div>
+</div>
+
+<script>
+    function showModal(button) {
+        const text = button.getAttribute("data-fulltext");
+        document.getElementById("modal-text").innerText = text;
+        document.getElementById("modal").style.display = "block";
+    }
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+    window.onclick = function(event) {
+        const modal = document.getElementById("modal");
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

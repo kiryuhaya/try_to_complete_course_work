@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h2>Введите текст для проверки</h2>
+<form id="check-form" method="post">
+    <textarea 
+        name="text_to_check" 
+        id="text-input" 
+        rows="8"
+        placeholder="Введите текст здесь..." 
+        required
+    ></textarea>
+    <button type="submit">Проверить текст</button>
+</form>
+
+<div id="result-container" style="display: none;">
+    <h3>Результат проверки:</h3>
+    <p id="prediction-text"></p>
+    <p id="probability-text"></p>
+    <div id="highlighted-text"></div>
+</div>
+
+<script>
+document.getElementById('check-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('highlighted-text').innerHTML = ''; 
+        
+        const response = await fetch('/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Неизвестная ошибка');
+        }
+        const result = await response.json();
+        
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('prediction-text').textContent = 
+            `Вердикт: ${result.prediction === 'AI-generated' ? 'Сгенерирован ИИ' : 'Написан человеком'}`;
+            
+        document.getElementById('probability-text').textContent = 
+            `Уверенность: ${(result.probability * 100).toFixed(1)}%`;
+
+        if (result.highlighted) {
+            document.getElementById('highlighted-text').innerHTML = result.highlighted;
+        } else {
+            document.getElementById('highlighted-text').textContent = 'Не удалось сгенерировать подсветку';
+        }
+
+    } catch (error) {
+        alert(error.message || 'Произошла ошибка при проверке текста');
+        console.error('Ошибка:', error);
+    }
+});
+</script>
+
+<style>
+#text-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #007BFF;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    background: #007BFF;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+    background: #0056b3;
+}
+
+#result-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #007BFF;
+}
+
+#prediction-text {
+    color: #2c3e50;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+#probability-text {
+    color: #7f8c8d;
+    font-size: 0.9em;
+
+.highlight-red {
+    background-color: #ffcccc;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.highlight-yellow {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+#highlighted-text {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+}
+
+
+.ai-highlight {
+    transition: background 0.3s;
+    border-radius: 3px;
+    padding: 2px;
+}
+</style>
+{% endblock %}

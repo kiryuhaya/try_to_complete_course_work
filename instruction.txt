@@ -1,0 +1,11 @@
+# Для FastAPI-сервиса:
+cd predictor_service
+python -m venv venv
+source venv/bin/activate  # или venv\Scripts\activate в Windows
+pip install -r requirements.txt
+
+# Для Flask-приложения:
+cd ../web_app
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
