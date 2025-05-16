@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timezone
 import torch
-from transformers import DistilBertForSequenceClassification, DistilBertTokenizer
 import numpy as np
 import os
 import requests
