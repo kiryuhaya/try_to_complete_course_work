@@ -17,16 +17,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Укажите только путь к папке с моделью
-MODEL_PATH = r"c:/for_different/программки)/course_work/model"  
-
-# Загрузка модели и токенизатора
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH)
-tokenizer = DistilBertTokenizer.from_pretrained(os.path.join(MODEL_PATH, "tokenizer"))
-model.to(device)
-model.eval()
-
 # Модели базы данных
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
